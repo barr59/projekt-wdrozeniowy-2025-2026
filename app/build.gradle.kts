@@ -40,6 +40,24 @@ android {
     buildFeatures {
         compose = true
     }
+
+    //sprawdzenie local.properties
+    val localProperties = java.util.Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+    //generowanie pola w BuildConfig
+    buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "SUPABASE_URL", "\"${localProperties["SUPABASE_URL"] ?: ""}\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties["SUPABASE_ANON_KEY"] ?: ""}\"")
+        }
+        getByName("release") {
+            buildConfigField("String", "SUPABASE_URL", "\"${localProperties["SUPABASE_URL"] ?: ""}\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties["SUPABASE_ANON_KEY"] ?: ""}\"")
+        }
+    }
 }
 
 dependencies {
@@ -73,4 +91,10 @@ dependencies {
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Supabase
+    implementation("io.github.jan-tennert.supabase:supabase-kt:2.3.0")
+    implementation("io.github.jan-tennert.supabase:auth-kt:2.3.0")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
